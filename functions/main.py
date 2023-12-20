@@ -34,19 +34,19 @@ def sme(req: https_fn.Request) -> https_fn.Request:
 
     index_name = req.args.get('index', "hf-test-12-20-b")
     query = req.args.get("query")
-    print(query)
+
     pinecone.init(api_key=pinecone_api_key.value, environment="gcp-starter")
     pinecone_index = pinecone.Index(index_name)
     openai.api_key = openai_api_key.value
-    print("cp2")
+
     vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
     index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
-    print("cp3")
+
 
     # https://docs.llamaindex.ai/en/stable/api_reference/llms/openai.html
     llm = OpenAI(model='gpt-3.5-turbo', temperature=0.1)
     query_engine = index.as_query_engine(llm= llm, similarity_top_k=5) #TODO add streaming back in
-    print("cp4")
+
     response = query_engine.query(query)
-    print(response.response)
-    return https_fn.Response(response.response)
+
+    return https_fn.Response("Oooh yea, caaan do:\n\n\n" + response.response)
