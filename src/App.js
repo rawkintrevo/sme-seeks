@@ -12,7 +12,8 @@ import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-import { getFunctions, httpsCallable } from "firebase/functions";
+
+// import { getFunctions, httpsCallable } from "firebase/functions";
 
 
 // Your web app's Firebase configuration
@@ -32,7 +33,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 // eslint-disable-next-line
-const functions = getFunctions(app);
+// const functions = getFunctions(app);
 // eslint-disable-next-line
 const analytics = getAnalytics(app);
 
