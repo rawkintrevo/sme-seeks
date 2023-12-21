@@ -54,7 +54,7 @@ function App() {
     // const sme = httpsCallable(functions, 'sme');
     // sme({query: query})
     //     .then((result) => {
-    fetch('https://us-central1-sme-seeks.cloudfunctions.net/sme')
+    fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
