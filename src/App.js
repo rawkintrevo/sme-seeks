@@ -57,6 +57,7 @@ function App() {
     fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`, {mode: 'no-cors'})
         .then((response) => {
           if (!response.ok) {
+            console.log('response: ', response)
             throw new Error('Network response was not ok');
           }
           console.log("call success", response)
