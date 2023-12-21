@@ -49,10 +49,19 @@ function App() {
     // const response = await fetch(`/sme?query=${query}&temperature=${temperature}&max_len=${maxLen}`);
     // const data = await response.json();
     console.log("query: ", query)
-    const functions = getFunctions();
-    const sme = httpsCallable(functions, 'sme');
-    sme({query: query})
+    // const functions = getFunctions();
+    // const sme = httpsCallable(functions, 'sme');
+    // sme({query: query})
+    //     .then((result) => {
+    fetch('/sme')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
         .then((result) => {
+          console.log(result)
           setResponse(result.data.text);
           setLoading(false);
         });
