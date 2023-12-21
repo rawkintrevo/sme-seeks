@@ -20,20 +20,11 @@ pinecone_api_key = StringParam("PINECONE_API_KEY")
 openai_api_key = StringParam("OPENAI_API_KEY")
 initialize_app()
 
+@https_fn.on_call()
+def sme(req: https_fn.CallableRequest) -> https_fn.Request:
 
-@https_fn.on_request()
-def hello_world(req: https_fn.Request) -> https_fn.Response:
-    return https_fn.Response("Hello world!")
-
-@https_fn.on_request()
-def echo(req: https_fn.Request) -> https_fn.Response:
-    return https_fn.Response(req.args.get('text', "Say something"))
-
-@https_fn.on_request()
-def sme(req: https_fn.Request) -> https_fn.Request:
-
-    index_name = req.args.get('index', "hf-test-12-20-b")
-    query = req.args.get("query")
+    index_name = "hf-test-12-20-b" #req.args.get('index', "hf-test-12-20-b")
+    query = req.data["query"]
 
     pinecone.init(api_key=pinecone_api_key.value, environment="gcp-starter")
     pinecone_index = pinecone.Index(index_name)
@@ -49,4 +40,6 @@ def sme(req: https_fn.Request) -> https_fn.Request:
 
     response = query_engine.query(query)
 
-    return https_fn.Response("Oooh yea, caaan do:\n\n\n" + response.response)
+    resp_txt = str(response.response)
+
+    return {"text": resp_txt}
