@@ -13,7 +13,7 @@ import { getAnalytics } from "firebase/analytics";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 
-// import { getFunctions, httpsCallable } from "firebase/functions";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 
 // Your web app's Firebase configuration
@@ -33,7 +33,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 // eslint-disable-next-line
-// const functions = getFunctions(app);
+const functions = getFunctions(app);
 // eslint-disable-next-line
 const analytics = getAnalytics(app);
 
@@ -51,21 +51,21 @@ function App() {
     // const data = await response.json();
     console.log("query: ", query)
     // const functions = getFunctions();
-    // const sme = httpsCallable(functions, 'sme');
-    // sme({query: query})
-    //     .then((result) => {
-    fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`, {headers: {'Access-Control-Allow-Origin': '*'}})
-        .then((response) => {
-          if (!response.ok) {
-            console.log('response: ', response)
-            throw new Error('Network response was not ok');
-          }
-          console.log("call success", response)
-          console.log(response.json())
-          return response.json();
-        })
+    const sme = httpsCallable(functions, 'sme');
+    sme({query: query})
         .then((result) => {
-          console.log(result)
+    // fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`)
+    //     .then((response) => {
+    //       if (!response.ok) {
+    //         console.log('response: ', response)
+    //         throw new Error('Network response was not ok');
+    //       }
+    //       console.log("call success", response)
+    //       console.log(response.json())
+    //       return response.json();
+    //     })
+    //     .then((result) => {
+    //       console.log(result)
           setResponse(result.data.text);
           setLoading(false);
         });
