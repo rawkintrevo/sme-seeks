@@ -48,7 +48,7 @@ function App() {
     // const response = await fetch(`/sme?query=${query}&temperature=${temperature}&max_len=${maxLen}`);
     // const data = await response.json();
 
-    const functions = getFunctions();
+    // const functions = getFunctions();
     const sme = httpsCallable(functions, 'sme');
     sme({query: query})
         .then((result) => {
