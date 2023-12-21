@@ -12,7 +12,7 @@ import { getAnalytics } from "firebase/analytics";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-import firebase from "firebase/compat/app";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -30,6 +30,8 @@ const firebaseConfig = {
 // Initialize Firebase
 
 const app = initializeApp(firebaseConfig);
+const functions = getFunctions(app);
+
 // eslint-disable-next-line
 const analytics = getAnalytics(app);
 
@@ -40,16 +42,22 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState('');
 
+
   const handleGenerate = async () => {
     setLoading(true);
     // const response = await fetch(`/sme?query=${query}&temperature=${temperature}&max_len=${maxLen}`);
     // const data = await response.json();
-    var sme = firebase.functions().httpsCallable('sme');
-    sme({query: query}).then(result => {
-      setResponse(result);
-      setLoading(false);
-    })
 
+    const functions = getFunctions();
+    const sme = httpsCallable(functions, 'sme');
+    sme({query: query})
+        .then((result) => {
+          // Read result of the Cloud Function.
+          /** @type {any} */
+
+          setResponse(result.data.text);
+          setLoading(false);
+        });
   };
 
   return (
