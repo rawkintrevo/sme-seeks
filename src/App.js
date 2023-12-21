@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
@@ -29,6 +30,7 @@ const firebaseConfig = {
 // Initialize Firebase
 
 const app = initializeApp(firebaseConfig);
+// eslint-disable-next-line
 const analytics = getAnalytics(app);
 
 function App() {
