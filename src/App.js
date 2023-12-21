@@ -66,7 +66,7 @@ function App() {
     //     })
     //     .then((result) => {
     //       console.log(result)
-          setResponse(result.data.text);
+          setResponse(result.text);
           setLoading(false);
         });
   };
