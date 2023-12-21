@@ -47,14 +47,11 @@ function App() {
     setLoading(true);
     // const response = await fetch(`/sme?query=${query}&temperature=${temperature}&max_len=${maxLen}`);
     // const data = await response.json();
-
+    console.log("query: ", query)
     // const functions = getFunctions();
     const sme = httpsCallable(functions, 'sme');
     sme({query: query})
         .then((result) => {
-          // Read result of the Cloud Function.
-          /** @type {any} */
-
           setResponse(result.data.text);
           setLoading(false);
         });
