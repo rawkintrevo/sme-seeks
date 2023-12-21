@@ -30,7 +30,7 @@ const firebaseConfig = {
 // Initialize Firebase
 
 const app = initializeApp(firebaseConfig);
-// const functions = getFunctions(app);
+const functions = getFunctions(app);
 
 // eslint-disable-next-line
 const analytics = getAnalytics(app);
@@ -48,7 +48,7 @@ function App() {
     // const response = await fetch(`/sme?query=${query}&temperature=${temperature}&max_len=${maxLen}`);
     // const data = await response.json();
 
-    const functions = getFunctions();
+    // const functions = getFunctions();
     const sme = httpsCallable(functions, 'sme');
     sme({query: query})
         .then((result) => {
