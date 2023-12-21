@@ -60,6 +60,7 @@ function App() {
             throw new Error('Network response was not ok');
           }
           console.log("call success", response)
+          console.log(response.json())
           return response.json();
         })
         .then((result) => {
