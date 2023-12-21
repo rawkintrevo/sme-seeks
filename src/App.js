@@ -54,7 +54,7 @@ function App() {
     // const sme = httpsCallable(functions, 'sme');
     // sme({query: query})
     //     .then((result) => {
-    fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`, {mode: 'no-cors'})
+    fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`, {mode: 'cors'})
         .then((response) => {
           if (!response.ok) {
             console.log('response: ', response)
