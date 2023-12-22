@@ -40,6 +40,10 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]); // State variable for messages
   const [isSubItemsVisible, setSubItemsVisible] = useState(false);
+  const [temperature, setTemperature] = useState(0.1);
+  const [topK, setTopK] = useState(5);
+  const [index, setIndex] = useState('Huggingface Docs');
+  const [model, setModel] = useState('gpt-3.5-turbo');
 
 
 
@@ -90,12 +94,55 @@ function App() {
                 <div>
                   <p onClick={toggleSubItems} style={{ cursor: 'pointer' }}>Knobs and Buttons</p>
                   {isSubItemsVisible && (
-                      <ul>
-                        <li>Temperature (Creativity)</li>
-                        <li>Top K (How Many Sources)</li>
-                        <li>Index (SME in what?)</li>
-                        <li>Model (GPT3.5/3.5-16k/4/LLama-7b-GGUF)</li>
-                      </ul>
+                      <div>
+                        <label htmlFor="temperature">Temperature:</label>
+                        <input
+                            type="range"
+                            id="temperature"
+                            min={0.1}
+                            max={0.1}
+                            step={0.01}
+                            value={temperature}
+                            onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                        />
+                        <span>{temperature.toFixed(2)}</span>
+                        <br />
+
+                        <label htmlFor="topK">Top K:</label>
+                        <select
+                            id="topK"
+                            value={topK}
+                            onChange={(e) => setTopK(parseInt(e.target.value))}
+                        >
+                          {/*<option value={1}>1</option>*/}
+                          {/*<option value={2}>2</option>*/}
+                          {/*<option value={3}>3</option>*/}
+                          {/*<option value={4}>4</option>*/}
+                          <option value={5}>5</option>
+                        </select>
+                        <br />
+
+                        <label htmlFor="index">Index:</label>
+                        <select
+                            id="index"
+                            value={index}
+                            onChange={(e) => setIndex(e.target.value)}
+                        >
+                          <option value="huggingface-docs-test-23-12-22">Hugging Face Docs</option>
+                          {/* Add other index options here */}
+                        </select>
+                        <br />
+
+                        <label htmlFor="model">Model:</label>
+                        <select
+                            id="model"
+                            value={model}
+                            onChange={(e) => setModel(e.target.value)}
+                        >
+                          <option value="gpt-3.5-turbo">OpenAI: GPT 3.5 Turbo</option>
+                          {/* Add other model options here */}
+                        </select>
+                      </div>
                   )}
                 </div>
 
