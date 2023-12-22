@@ -48,13 +48,16 @@ function App() {
   const handleGenerate = async () => {
     setLoading(true);
 
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: query, isUser: true }
+    ]);
     const sme = httpsCallable(functions, 'sme');
     sme({query: query})
         .then((result) => {
           setMessages((prevMessages) => [
             ...prevMessages,
-            { text: query, isUser: true },
-            { text: 'Response from AI goes here', isUser: false },
+            { text: result.data.text, isUser: false },
           ]);
           setQuery('');
           setLoading(false);
