@@ -39,7 +39,7 @@ function App() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]); // State variable for messages
-
+  const [isSubItemsVisible, setSubItemsVisible] = useState(false);
 
 
 
@@ -47,18 +47,21 @@ function App() {
 
   const handleGenerate = async () => {
     setLoading(true);
-    setMessages([...messages, { text: query, isUser: true }]);
-    // If len messages == 1 add "oook, cannnn doooooo"
+
     const sme = httpsCallable(functions, 'sme');
     sme({query: query})
         .then((result) => {
-          setMessages([...messages, { text: result.data.text, isUser: false }]);
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: query, isUser: true },
+            { text: 'Response from AI goes here', isUser: false },
+          ]);
           setQuery('');
           setLoading(false);
           console.log(messages)
         });
   };
-  const [isSubItemsVisible, setSubItemsVisible] = useState(false);
+
 
   const toggleSubItems = () => {
     setSubItemsVisible(!isSubItemsVisible);

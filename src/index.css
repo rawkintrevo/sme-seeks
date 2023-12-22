@@ -36,6 +36,7 @@ code {
   background-color: #0074cc; /* Blue color for user messages */
   color: white;
   align-self: flex-end;
+  margin-left: auto;
 }
 
 .ai {
