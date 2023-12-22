@@ -55,6 +55,7 @@ function App() {
           setMessages([...messages, { text: result.data.text, isUser: false }]);
           setQuery('');
           setLoading(false);
+          console.log(messages)
         });
   };
   const [isSubItemsVisible, setSubItemsVisible] = useState(false);

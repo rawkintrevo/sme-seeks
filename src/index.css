@@ -17,7 +17,7 @@ code {
   flex-direction: column;
   height: 100vh;
   background-color: #f0f0f0; /* Change to your desired background color */
-  padding: 20px;
+  padding: 5px;
 }
 
 .chat-messages {
