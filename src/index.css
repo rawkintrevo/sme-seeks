@@ -11,3 +11,34 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f0f0f0; /* Change to your desired background color */
+  padding: 20px;
+}
+
+.chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.message {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  max-width: 70%;
+}
+
+.user {
+  background-color: #0074cc; /* Blue color for user messages */
+  color: white;
+  align-self: flex-end;
+}
+
+.ai {
+  background-color: #ff3333; /* Red color for AI messages */
+  color: white;
+}

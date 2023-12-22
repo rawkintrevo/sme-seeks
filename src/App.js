@@ -1,8 +1,8 @@
 // eslint-disable-next-line
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
+
 import './App.css';
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactMarkdown from 'react-markdown';
 
 // Import the functions you need from the SDKs you need
@@ -30,110 +30,107 @@ const firebaseConfig = {
 
 
 // Initialize Firebase
-
 const app = initializeApp(firebaseConfig);
-// eslint-disable-next-line
 const functions = getFunctions(app);
 // eslint-disable-next-line
 const analytics = getAnalytics(app);
 
 function App() {
   const [query, setQuery] = useState('');
-  const [temperature, setTemperature] = useState(0.7);
-  const [maxLen, setMaxLen] = useState(128);
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState('');
+  const [messages, setMessages] = useState([]); // State variable for messages
+
+
+
+
 
 
   const handleGenerate = async () => {
     setLoading(true);
-    // const response = await fetch(`/sme?query=${query}&temperature=${temperature}&max_len=${maxLen}`);
-    // const data = await response.json();
-    console.log("query: ", query)
-    // const functions = getFunctions();
+    setMessages([...messages, { text: query, isUser: true }]);
+    // If len messages == 1 add "oook, cannnn doooooo"
     const sme = httpsCallable(functions, 'sme');
     sme({query: query})
         .then((result) => {
-    // fetch(`https://us-central1-sme-seeks.cloudfunctions.net/sme?query=${query}`)
-    //     .then((response) => {
-    //       if (!response.ok) {
-    //         console.log('response: ', response)
-    //         throw new Error('Network response was not ok');
-    //       }
-    //       console.log("call success", response)
-    //       console.log(response.json())
-    //       return response.json();
-    //     })
-    //     .then((result) => {
-    //       console.log(result)
-          console.log(result)
-          setResponse(result.data.text);
+          setMessages([...messages, { text: result.data.text, isUser: false }]);
+          setQuery('');
           setLoading(false);
         });
+  };
+  const [isSubItemsVisible, setSubItemsVisible] = useState(false);
+
+  const toggleSubItems = () => {
+    setSubItemsVisible(!isSubItemsVisible);
   };
 
   return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <div className="container">
-            <form>
-              <div className="mb-3">
-                <label htmlFor="query" className="form-label">Query</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    id="query"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="temperature" className="form-label">Temperature</label>
-                <input
-                    type="range"
-                    className="form-range"
-                    id="temperature"
-                    min={0.5}
-                    max={1.0}
-                    step={0.05}
-                    value={temperature}
-                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="maxLen" className="form-label">Max Length</label>
-                <select
-                    className="form-select"
-                    id="maxLen"
-                    value={maxLen}
-                    onChange={(e) => setMaxLen(parseInt(e.target.value))}
-                >
-                  <option value="64">64</option>
-                  <option value="128">128</option>
-                  <option value="256">256</option>
-                  <option value="512">512</option>
-                  <option value="1024">1024</option>
-                  <option value="2048">2048</option>
-                </select>
-              </div>
-              <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleGenerate}
-                  disabled={loading}
-              >
-                {loading ? 'Loading...' : 'Generate'}
-              </button>
-            </form>
-            {response && (
-                <div className="mt-3">
-                  <p>Response:</p>
-                  <ReactMarkdown>{response}</ReactMarkdown>
+        <div className="container-fluid">
+          <div className="row">
+            {/* Sidebar */}
+            <div className="col-md-3 sidebar" style={{
+              backgroundColor: '#333333',
+              height: '100vh',
+              color: 'antiquewhite',
+              fontFamily: 'Comic Sans MS',
+              textAlign: 'left'}} >
+              {/* You can place your sidebar content here */}
+              Hi, I'm
+              <h2>Mr. SMEseeks</h2>
+              {/* Add your sidebar content here */}
+
+                {/* Line with sub-items */}
+                <div>
+                  <p onClick={toggleSubItems} style={{ cursor: 'pointer' }}>Knobs and Buttons</p>
+                  {isSubItemsVisible && (
+                      <ul>
+                        <li>Temperature (Creativity)</li>
+                        <li>Top K (How Many Sources)</li>
+                        <li>Index (SME in what?)</li>
+                        <li>Model (GPT3.5/3.5-16k/4/LLama-7b-GGUF)</li>
+                      </ul>
+                  )}
                 </div>
-            )}
+
+            </div>
+
+            {/* Main Content */}
+            <div className="col-md-9">
+              <div className="container">
+                <div className="chat-container">
+                  <div className="chat-messages">
+                    {messages.map((message, index) => (
+                        <div key={index} className={`message ${message.isUser ? 'user' : 'ai'}`}>
+                          <ReactMarkdown>{message.text}</ReactMarkdown>
+                        </div>
+                    ))}
+                  </div>
+                  <div className="chat-input">
+                    <form>
+                      <div className="mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Type your message..."
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                        />
+                      </div>
+                      <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={handleGenerate}
+                          disabled={loading}
+                      >
+                        {loading ? 'Sending...' : 'Send'}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </header>
+        </div>
       </div>
   );
 }
