@@ -2,7 +2,7 @@ import ReactMarkdown from "react-markdown";
 import React, {useEffect, useState} from "react";
 import {httpsCallable} from "firebase/functions";
 
-import { collection, doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, setDoc } from "firebase/firestore";
 
 
 function Chat({ query,
@@ -59,12 +59,12 @@ function Chat({ query,
             console.log("New chat")
             const chatRef = doc(collection(db, 'chat'), chatId);;
             console.log('chatRef', chatRef)
-            chatRef.set({
+            setDoc( chatRef, {
               messages: [
                   { text: query, isUser: true },
                     { text: "ooook, cannn doooo", isUser: false },
               ]
-            });
+            }, { merge: true });
             setNewChat(false);
         }
         setMessages((prevMessages) => [
