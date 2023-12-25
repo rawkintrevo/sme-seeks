@@ -28,11 +28,13 @@ function Chat({ query,
         try {
             const unsubscribe = onSnapshot(chatRef, (doc) => {
                 if (doc.exists) {
+                    console.log("Document exists! data:", doc.data())
                     const data = doc.data() || {};
                     setMessages(data.messages || []);
                     setNewChat(false);
                 } else {
                     setNewChat(true);
+                    console.log("Document does not exist!");
                     // Handle case where document doesn't exist
                     // You might want to create it here or display a message
                 }
@@ -50,14 +52,11 @@ function Chat({ query,
 
         if (newChat) {
 
-            // create new firestore document at /chats/{chatId}
-            // get the document id
-            // add the messages [
             const chatRef = doc(db,'chat',chatId);
             chatRef.set({
               messages: [
-                { text: "ooook, cannn doooo", isUser: false },
-                { text: query, isUser: true }
+                  { text: query, isUser: true },
+                    { text: "ooook, cannn doooo", isUser: false },
               ]
             });
             setNewChat(false);
