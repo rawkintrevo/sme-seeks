@@ -7,10 +7,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getFirestore } from "firebase/firestore";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
+import { v4 as uuidv4 } from 'uuid';
 
 import { getFunctions } from "firebase/functions";
 
@@ -33,6 +35,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const functions = getFunctions(app);
+const db = getFirestore(app);
 // eslint-disable-next-line
 const analytics = getAnalytics(app);
 
@@ -44,6 +47,8 @@ function App() {
   const [topK, setTopK] = useState(5);
   const [index, setIndex] = useState('Huggingface Docs');
   const [model, setModel] = useState('gpt-3.5-turbo');
+  const [chatId, setChatId] = useState(uuidv4());
+
 
   return (
       <div className="App">
@@ -59,6 +64,7 @@ function App() {
                setIndex={setIndex}
                model={model}
                setModel={setModel}
+               setChatId={setChatId}
             />
 
 
@@ -71,6 +77,8 @@ function App() {
                 messages={messages}
                 setMessages={setMessages}
                 functions={functions}
+                chatId={chatId}
+                db={db}
             />
           </div>
         </div>
