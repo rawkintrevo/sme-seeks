@@ -28,10 +28,15 @@ function Chat({ query,
         try {
             const unsubscribe = onSnapshot(chatRef, (doc) => {
                 if (doc.exists) {
-                    console.log("Document exists! data:", doc.data())
-                    const data = doc.data() || {};
-                    setMessages(data.messages || []);
-                    setNewChat(false);
+                    if (doc.data() === undefined) {
+                        setNewChat(true);
+                        console.log("Document does not exist!");
+                    } else {
+                        console.log("Document exists! data:", doc.data())
+                        const data = doc.data() || {};
+                        setMessages(data.messages || []);
+                        setNewChat(false);
+                    }
                 } else {
                     setNewChat(true);
                     console.log("Document does not exist!");
