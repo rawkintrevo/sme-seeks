@@ -56,8 +56,9 @@ function Chat({ query,
         setLoading(true);
 
         if (newChat) {
-
-            const chatRef = doc(db,'chat',chatId);
+            console.log("New chat")
+            const chatRef = doc(collection(db, 'chat'), chatId);;
+            console.log('chatRef', chatRef)
             chatRef.set({
               messages: [
                   { text: query, isUser: true },
