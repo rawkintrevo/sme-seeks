@@ -59,6 +59,8 @@
 
 ### /onCreateIndex
 
-### /onCreateChat
-
 ### /onCreateMessage
+
+This is a `GET` request that kicks off the llama-index call, which 
+writes to the chat's messages array. And when it returns, you know
+the message has finished. 
