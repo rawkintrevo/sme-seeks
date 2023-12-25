@@ -23,7 +23,7 @@ function Chat({ query,
 
 
         const chatRef = doc(collection(db, 'chat'), chatId);
-
+        console.log('chatRef', chatRef);
         // Add error handling for onSnapshot
         try {
             const unsubscribe = onSnapshot(chatRef, (doc) => {
