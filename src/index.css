@@ -30,6 +30,7 @@ code {
   margin: 5px;
   border-radius: 5px;
   max-width: 70%;
+  text-align: left; /* Updated to ensure left alignment */
 }
 
 .user {
