@@ -111,7 +111,7 @@ function Chat({ query,
                 <div className="chat-container">
                     <div className="chat-messages">
                         {messages.map((message, index) => (
-                            <div key={index} className={`message ${message.isUser ? 'user' : 'ai'}`}>
+                            <div key={index} className={`message ${message.isUser ? 'user' : 'ai'} text-left`}>
                                 <ReactMarkdown>{message.text}</ReactMarkdown>
                             </div>
                         ))}
