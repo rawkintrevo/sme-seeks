@@ -43,7 +43,7 @@ function Chat({ query,
                     }
                 } else {
                     setNewChat(true);
-                    console.log("Document does not exist!");
+                    // console.log("Document does not exist!");
                     // Handle case where document doesn't exist
                     // You might want to create it here or display a message
                 }
@@ -95,13 +95,13 @@ function Chat({ query,
         const sme = httpsCallable(functions, 'sme');
         sme({query: query, index: index, model: model, temperature: temperature, top_k: topK, chat_id: chatId})
             .then((result) => {
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { text: result.data.text, isUser: false },
-                ]);
+                // setMessages((prevMessages) => [
+                //     ...prevMessages,
+                //     { text: result.data.text, isUser: false },
+                // ]);
                 setQuery('');
                 setLoading(false);
-                console.log(messages)
+                // console.log(messages)
             });
     };
 
