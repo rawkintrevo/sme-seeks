@@ -79,6 +79,10 @@ function App() {
                 functions={functions}
                 chatId={chatId}
                 db={db}
+                index={index}
+                model={model}
+                temperature={temperature}
+                topK={topK}
             />
           </div>
         </div>
