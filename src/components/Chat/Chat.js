@@ -56,6 +56,21 @@ function Chat({ query,
         }
     }, [chatId, db, setMessages]);
 
+    useEffect(() => {
+        // This effect listens to changes in the 'messages' array
+        if (!newChat) {
+            const chatRef = doc(collection(db, "chat"), chatId);
+            const unsubscribe = onSnapshot(chatRef, (doc) => {
+                if (doc.exists) {
+                    const data = doc.data() || {};
+                    setMessages(data.messages || []);
+                }
+            });
+
+            return () => unsubscribe();
+        }
+    }, [newChat, chatId, db, setMessages]);
+
     const handleGenerate = async () => {
         setLoading(true);
 
