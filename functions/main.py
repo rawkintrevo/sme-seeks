@@ -13,19 +13,51 @@ from llama_index.storage.storage_context import StorageContext
 from llama_index import VectorStoreIndex
 from llama_index.vector_stores import PineconeVectorStore
 
+from google.cloud import firestore
+
 import openai
 
 
-pinecone_api_key = StringParam("PINECONE_API_KEY")
+# pinecone_api_key = StringParam("PINECONE_API_KEY")
 openai_api_key = StringParam("OPENAI_API_KEY")
 initialize_app()
 
 @https_fn.on_call()
 def sme(req: https_fn.CallableRequest) -> https_fn.Request:
 
-    index_name = "hf-test-12-20-b" #req.args.get('index', "hf-test-12-20-b")
-    query = req.data["query"]
+    db = firestore.Client()
 
+    # Replace 'your-collection' and 'your-document-id' with your collection and document IDs
+    collection_name = 'user'
+    document_id = 'trevo'
+
+    # Reference to the Firestore document
+    document_ref = db.collection(collection_name).document(document_id)
+
+    try:
+        # Get the document data
+        document_data = document_ref.get()
+
+        # Check if the document exists
+        if document_data.exists:
+            # Access the document data as a dictionary
+            data = document_data.to_dict()
+            return f"Document data: {data}"
+        else:
+            return "Document does not exist"
+    except Exception as e:
+        return f"Error: {str(e)}"
+
+    index_name = req.data['index']
+    temperature = float(data.get('temperature', 0.1))
+    top_k = int(data.get("topK"), 3)
+    model = data.get("model", 'gpt-3.5-turbo')
+    if data['indicides'].get(index_name) is None:
+        return({'message': "user does not have index name"})
+    pinecone_api_key = data['indicies'][index_name]['api_key']
+    # index_name = "huggingface-docs-test-23-12-22" #req.args.get('index', "hf-test-12-20-b")
+    query = req.data["query"]
+    print(query)
     pinecone.init(api_key=pinecone_api_key.value, environment="gcp-starter")
     pinecone_index = pinecone.Index(index_name)
     openai.api_key = openai_api_key.value
@@ -41,5 +73,5 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
     response = query_engine.query(query)
 
     resp_txt = str(response.response)
-
-    return {"text": resp_txt}
+    print(resp_txt)
+return {"text": resp_txt}
