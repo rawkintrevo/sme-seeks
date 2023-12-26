@@ -66,14 +66,16 @@ function Chat({ query,
             setDoc( chatRef, {
               messages: [
                   { text: query, isUser: true },
-                    { text: "ooook, cannn doooo", isUser: false },
+                    { text: "ooook, cannn doooo...", isUser: false },
+                  { text: "", isUser: false }
               ]
             }, { merge: true });
             setNewChat(false);
         }
         setMessages((prevMessages) => [
             ...prevMessages,
-            { text: query, isUser: true }
+            { text: query, isUser: true },
+            { text: "", isUser: false }
         ]);
         const sme = httpsCallable(functions, 'sme');
         sme({query: query, index: index, model: model, temperature: temperature, top_k: topK, chat_id: chatId})
