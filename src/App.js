@@ -45,7 +45,7 @@ function App() {
   const [messages, setMessages] = useState([]); // State variable for messages
   const [temperature, setTemperature] = useState(0.1);
   const [topK, setTopK] = useState(5);
-  const [index, setIndex] = useState('Huggingface Docs');
+  const [index, setIndex] = useState('huggingface-docs-test-23-12-22');
   const [model, setModel] = useState('gpt-3.5-turbo');
   const [chatId, setChatId] = useState(uuidv4());
 
