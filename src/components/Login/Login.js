@@ -34,6 +34,19 @@ function Login({app})  {
     const handleGoogleSignIn = async () => {
         try {
             await signInWithPopup(auth, new GoogleAuthProvider());
+            // User has successfully signed in, now create a Firestore document
+            const user = auth.currentUser;
+            const userRef = doc(db, "user", user.uid);
+
+            // Check if the user document already exists
+            const userDoc = await getDoc(userRef);
+            if (!userDoc.exists()) {
+                // If the document doesn't exist, create it
+                await setDoc(userRef, {
+                    // You can add other user-related data here
+                });
+            }
+
             console.log("User Logged in, redirecting:", auth.currentUser.uid);
             navigate('/');
             // Handle successful Google login
