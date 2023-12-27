@@ -4,8 +4,9 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup,
     getAuth} from "firebase/auth";
-import {useNavigate} from "react-router-dom"; // Import Firebase Auth
-
+import {useNavigate} from "react-router-dom";
+import {getFirestore} from "firebase/firestore"; // Import Firebase Auth
+import {getDoc, doc, setDoc } from "firebase/firestore";
 // import {
 //
 //     connectAuthEmulator,
@@ -32,6 +33,7 @@ function Login({app})  {
     };
 
     const handleGoogleSignIn = async () => {
+        const db = getFirestore(app);
         try {
             await signInWithPopup(auth, new GoogleAuthProvider());
             // User has successfully signed in, now create a Firestore document
