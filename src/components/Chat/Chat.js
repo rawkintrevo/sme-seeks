@@ -17,7 +17,8 @@ function Chat({ query,
                   index,
                   model,
                   temperature,
-                  topK}) {
+                  topK,
+              uid}) {
 
     const [newChat, setNewChat] = useState(true);
 
@@ -94,7 +95,7 @@ function Chat({ query,
             { text: "", isUser: false }
         ]);
         const sme = httpsCallable(functions, 'sme');
-        sme({query: query, index: index, model: model, temperature: temperature, top_k: topK, chat_id: chatId})
+        sme({query: query, index: index, model: model, temperature: temperature, top_k: topK, chat_id: chatId, uid: uid})
             .then((result) => {
                 // setMessages((prevMessages) => [
                 //     ...prevMessages,

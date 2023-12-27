@@ -99,6 +99,7 @@ function App({app}) {
                             model={model}
                             setModel={setModel}
                             setChatId={setChatId}
+                            uid={user.uid}
                         />
 
 
@@ -118,6 +119,7 @@ function App({app}) {
                                 model={model}
                                 temperature={temperature}
                                 topK={topK}
+                                uid={user.uid}
                             />
                         )}
                     </div>
