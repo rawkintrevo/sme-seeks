@@ -20,7 +20,7 @@ function Login({app})  {
 
     const handleGoogleSignIn = async () => {
         try {
-            await auth().signInWithPopup(new auth.GoogleAuthProvider());
+            await auth.signInWithPopup(new auth.GoogleAuthProvider());
             // Handle successful Google login
         } catch (error) {
             // Handle Google sign-in errors
