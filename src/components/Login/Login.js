@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
-import {getAuth} from "firebase/auth"; // Import Firebase Auth
+import {
+    GoogleAuthProvider,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    getAuth} from "firebase/auth";
+import {useNavigate} from "react-router-dom"; // Import Firebase Auth
 
-
+// import {
+//
+//     connectAuthEmulator,
+//     getAuth,
+//     onAuthStateChanged,
+//     signInWithPopup,
+//     signOut,
+// } from 'firebase/auth';
 
 function Login({app})  {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const auth = getAuth(app);
+    const navigate = useNavigate();
     const handleEmailSignIn = async () => {
         try {
-            await auth().signInWithEmailAndPassword(email, password);
+            await signInWithEmailAndPassword(auth, email, password);
             // Handle successful login (e.g., redirect to protected routes)
         } catch (error) {
             // Handle sign-in errors
@@ -20,7 +33,9 @@ function Login({app})  {
 
     const handleGoogleSignIn = async () => {
         try {
-            await auth.signInWithPopup(new auth.GoogleAuthProvider());
+            await signInWithPopup(auth, new GoogleAuthProvider());
+            console.log("User Logged in, redirecting:", auth.currentUser.uid);
+            navigate('/');
             // Handle successful Google login
         } catch (error) {
             // Handle Google sign-in errors

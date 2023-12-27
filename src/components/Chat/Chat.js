@@ -26,6 +26,7 @@ function Chat({ query,
         // Access Firestore instance from props or context
 
 
+
         const chatRef = doc(collection(db, 'chat'), chatId);
         console.log('chatRef', chatRef);
         // Add error handling for onSnapshot
