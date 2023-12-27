@@ -57,6 +57,7 @@ function App({app}) {
 
 
     useEffect(() => {
+        // eslint-disable-next-line
         const unsubscribe = auth.onAuthStateChanged((user) => {
             if (user) {
                 // User is authenticated
