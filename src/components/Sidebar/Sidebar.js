@@ -4,7 +4,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 
-function Sidebar({ temperature, setTemperature, topK, setTopK, index, setIndex, model, setModel }) {
+function Sidebar({ temperature,
+                     setTemperature,
+                     topK,
+                     setTopK,
+                     index,
+                     setIndex,
+                     model,
+                     setModel,
+                 setChatId,
+                 user}) {
     const [isSubItemsVisible, setSubItemsVisible] = useState(false);
 
     const toggleSubItems = () => {

@@ -100,7 +100,7 @@ function App({app}) {
                             model={model}
                             setModel={setModel}
                             setChatId={setChatId}
-                            uid={user.uid}
+                            user={user}
                         />
 
 
