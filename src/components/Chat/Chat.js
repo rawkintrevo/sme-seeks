@@ -36,6 +36,12 @@ function Chat({
         }
     }, [chatId, db]);
 
+    const handleSubmit = (e) => {
+        e.preventDefault(); // Prevent form submission and page refresh
+
+        // Your message handling logic here
+        handleGenerate();
+    };
     const handleGenerate = async () => {
         setLoading(true);
 
@@ -84,7 +90,7 @@ function Chat({
                         ))}
                     </div>
                     <div className="chat-input">
-                        <form>
+                        <form onSubmit={handleSubmit}>
                             <div className="mb-3">
                                 <input
                                     type="text"
