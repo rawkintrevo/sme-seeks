@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import Accordion from 'react-bootstrap/Accordion';
-import {Button} from "react-bootstrap";
+import {Button,
+        Form} from "react-bootstrap";
 import { getAuth, signOut } from "firebase/auth";
 
 import "./custom.css"
@@ -60,57 +61,66 @@ function Sidebar({
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Knobs and Dials</Accordion.Header>
                     <Accordion.Body>
-                        <label htmlFor="temperature">Temperature:</label>
-                        <input
-                            type="range"
-                            id="temperature"
-                            min={0.01}
-                            max={0.99}
-                            step={0.01}
-                            value={temperature}
-                            onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                        />
-                        <span>{temperature.toFixed(2)}</span>
-                        <br />
+                        <Form>
+                            <Form.Group controlId="temperature">
+                                <Form.Label>Temperature:</Form.Label>
+                                <Form.Range
+                                    min={0.01}
+                                    max={0.99}
+                                    step={0.01}
+                                    value={temperature}
+                                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                                />
+                                <Form.Text>{temperature.toFixed(2)}</Form.Text>
+                            </Form.Group>
 
-                        <label htmlFor="topK">Top K:</label>
-                        <select
-                            id="topK"
-                            value={topK}
-                            onChange={(e) => setTopK(parseInt(e.target.value))}
-                        >
-                            <option value={5}>5</option>
-                        </select>
-                        <br />
+                            <Form.Group controlId="topK">
+                                <Form.Label>Top K:</Form.Label>
+                                <Form.Select
+                                    value={topK}
+                                    onChange={(e) => setTopK(parseInt(e.target.value))}
+                                >
+                                    {[...Array(21).keys()].map((number) => (
+                                        <option key={number} value={number}>
+                                            {number}
+                                        </option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
 
-                        <label htmlFor="index">Index:</label>
-                        <select
-                            id="index"
-                            value={index}
-                            onChange={(e) => setIndex(e.target.value)}
-                        >
-                            {userData && userData.indicies && Object.keys(userData.indicies).map((indexName) => (
-                                <option key={indexName} value={indexName}>
-                                    {userData.indicies[indexName].friendly_name}
-                                </option>
-                            ))}
-                        </select>
-                        <br />
+                            <Form.Group controlId="index">
+                                <Form.Label>Index:</Form.Label>
+                                <Form.Select
+                                    value={index}
+                                    onChange={(e) => setIndex(e.target.value)}
+                                >
+                                    {userData?.indicies &&
+                                        Object.keys(userData.indicies).map((indexName) => (
+                                            <option key={indexName} value={indexName}>
+                                                {userData.indicies[indexName].friendly_name}
+                                            </option>
+                                        ))}
+                                </Form.Select>
+                            </Form.Group>
 
-                        <label htmlFor="model">Model:</label>
-                        <select
-                            id="model"
-                            value={model}
-                            onChange={(e) => setModel(e.target.value)}
-                        >
-                            {userData && userData.models && Object.keys(userData.models).map((modelName) => (
-                                <option key={modelName} value={modelName}>
-                                    {userData.models[modelName].friendly_name}
-                                </option>
-                            ))}
-                        </select>
+                            <Form.Group controlId="model">
+                                <Form.Label>Model:</Form.Label>
+                                <Form.Select
+                                    value={model}
+                                    onChange={(e) => setModel(e.target.value)}
+                                >
+                                    {userData?.models &&
+                                        Object.keys(userData.models).map((modelName) => (
+                                            <option key={modelName} value={modelName}>
+                                                {userData.models[modelName].friendly_name}
+                                            </option>
+                                        ))}
+                                </Form.Select>
+                            </Form.Group>
+                        </Form>
                     </Accordion.Body>
                 </Accordion.Item>
+
                 <Accordion.Item eventKey="1">
                     <Accordion.Header>Chats</Accordion.Header>
                     <Accordion.Body>
