@@ -42,8 +42,8 @@ function Sidebar({ temperature,
                             <input
                                 type="range"
                                 id="temperature"
-                                min={0.1}
-                                max={0.1}
+                                min={0.01}
+                                max={0.99}
                                 step={0.01}
                                 value={temperature}
                                 onChange={(e) => setTemperature(parseFloat(e.target.value))}

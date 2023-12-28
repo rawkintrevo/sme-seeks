@@ -18,6 +18,11 @@ function App({ app }) {
     const [loading, setLoading] = useState(true);
     const [chatId, setChatId] = useState(null);
 
+    const [temperature, setTemperature] = useState(0.1);
+    const [topK, setTopK] = useState(5);
+    const [index, setIndex] = useState('huggingface-docs-test-23-12-22');
+    const [model, setModel] = useState('gpt-3.5-turbo');
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setUser(user);
@@ -45,13 +50,28 @@ function App({ app }) {
             <Outlet />
             <div className="container-fluid">
                 <div className="row">
-                    <Sidebar user={user} />
+                    <Sidebar
+                        temperature={temperature}
+                        setTemperature={setTemperature}
+                        topK={topK}
+                        setTopK={setTopK}
+                        index={index}
+                        setIndex={setIndex}
+                        model={model}
+                        setModel={setModel}
+                        setChatId={setChatId}
+                        user={user}
+                    />
                     {chatId && (
                         <Chat
                             chatId={chatId}
                             db={db}
                             functions={functions}
                             user={user}
+                            temperature={temperature}
+                            topK={topK}
+                            model={model}
+                            index={index}
                         />
                     )}
                 </div>

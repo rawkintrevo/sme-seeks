@@ -8,6 +8,10 @@ function Chat({
                   db,
                   functions,
                   user,
+    temperature,
+    topK,
+    model,
+    index
               }) {
     const [newChat, setNewChat] = useState(true);
     const [query, setQuery] = useState('');
@@ -45,6 +49,7 @@ function Chat({
     const handleGenerate = async () => {
         setLoading(true);
 
+
         if (newChat) {
             const chatRef = doc(collection(db, 'chat'), chatId);
             setDoc(chatRef, {
@@ -55,21 +60,25 @@ function Chat({
                 ],
             }, { merge: true });
             setNewChat(false);
+        } else {
+            const chatRef = doc(collection(db, 'chat'), chatId);
+            setDoc(chatRef, {
+                messages: [
+                    ...messages,
+                    { text: query, isUser: true },
+                    { text: '', isUser: false },
+                ]
+            })
         }
 
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: query, isUser: true },
-            { text: '', isUser: false },
-        ]);
 
         const sme = httpsCallable(functions, 'sme');
         sme({
             query,
-            index: 'huggingface-docs-test-23-12-22',
-            model: 'gpt-3.5-turbo',
-            temperature: 0.1,
-            top_k: 5,
+            index: index,
+            model: model,
+            temperature: temperature,
+            top_k: topK,
             chat_id: chatId,
             uid: user.uid,
         }).then(() => {
