@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, onSnapshot } from 'firebase/firestore';
 import Accordion from 'react-bootstrap/Accordion';
+import {Button} from "react-bootstrap";
+import { getAuth, signOut } from "firebase/auth";
 
 import "./custom.css"
 
@@ -35,6 +37,14 @@ function Sidebar({
         }
     }, [db, userProp]);
 
+    const handleSignOut = () => {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+            // Sign-out successful.
+        }).catch((error) => {
+            // An error happened.
+        });
+    }
     return (
 
         <div className="col-md-3 sidebar"
@@ -115,7 +125,10 @@ function Sidebar({
                 </Accordion.Item>
                 <Accordion.Item eventKey="2">
                     <Accordion.Header>User</Accordion.Header>
-                    <Accordion.Body>Not Yet Implemented</Accordion.Body>
+                    <Accordion.Body>
+                        <Button variant="danger" onClick={handleSignOut}>Sign Out</Button>
+                    </Accordion.Body>
+
                 </Accordion.Item>
             </Accordion>
         </div>
