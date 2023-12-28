@@ -1,0 +1,33 @@
+/*.accordion-body {*/
+/*  background-color: dimgrey;*/
+/*  !*color: darkgreen; <- font color*!*/
+/*}*/
+.accordion-body {
+    background-color: #f0f0f0;
+}
+
+.accordion-button {
+    color: slategrey; /* Change to your desired color */
+    background-color: lightgrey; /* Change to your desired background color */
+}
+
+/* Change the color of the Accordion headers when active */
+.accordion-button:active {
+    color: gray; /* Change to your desired color */
+    background-color: darkorange; /* Change to your desired background color */
+    /* Add other styles as needed */
+}
+
+/* Change the color of the Accordion headers when selected */
+.accordion-button:focus {
+    color: lightgrey; /* Change to your desired color */
+    background-color: slategrey; /* Change to your desired background color */
+    border: none;
+    /* Add other styles as needed */
+}
+
+/* Remove the border from the Accordion headers */
+.accordion-button {
+    border: none;
+}
+

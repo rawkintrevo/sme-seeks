@@ -51,19 +51,21 @@ function App({ app }) {
             <Outlet />
             <div className="container-fluid">
                 <div className="row">
-                    <Sidebar
-                        temperature={temperature}
-                        setTemperature={setTemperature}
-                        topK={topK}
-                        setTopK={setTopK}
-                        index={index}
-                        setIndex={setIndex}
-                        model={model}
-                        setModel={setModel}
-                        setChatId={setChatId}
-                        user={user}
-                        db={db}
-                    />
+                    {user && (
+                        <Sidebar
+                            temperature={temperature}
+                            setTemperature={setTemperature}
+                            topK={topK}
+                            setTopK={setTopK}
+                            index={index}
+                            setIndex={setIndex}
+                            model={model}
+                            setModel={setModel}
+                            setChatId={setChatId}
+                            userProp={user}
+                            db={db}
+                        />
+                    )}
                     {chatId && (
                         <Chat
                             chatId={chatId}
