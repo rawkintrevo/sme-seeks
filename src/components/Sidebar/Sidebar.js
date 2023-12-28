@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import { collection, doc, onSnapshot } from 'firebase/firestore';
 
 
 function Sidebar({ temperature,
@@ -13,9 +14,25 @@ function Sidebar({ temperature,
                      model,
                      setModel,
                  setChatId,
-                 user}) {
+                 user,
+                 db}) {
     const [isSubItemsVisible, setSubItemsVisible] = useState(false);
+    const [userData, setUserData] = useState({})
 
+    useEffect( () => {
+        const userRef = doc(collection(db, 'user'), user.uid);
+
+        try {
+            const unsubscribe = onSnapshot(userRef, (doc) => {
+                const data = doc.data() || {};
+                setUserData(data);
+            });
+
+            return () => unsubscribe();
+        } catch (error) {
+            console.error('Error attaching onSnapshot listener:', error);
+        }
+    })
     const toggleSubItems = () => {
         setSubItemsVisible(!isSubItemsVisible);
     };
@@ -71,11 +88,11 @@ function Sidebar({ temperature,
                                 value={index}
                                 onChange={(e) => setIndex(e.target.value)}
                             >
-                                <option
-                                    value="huggingface-docs-test-23-12-22">Hugging
-                                    Face Docs
-                                </option>
-                                {/* Add other index options here */}
+                                {Object.keys(userData.indicies).map((indexName) => (
+                                    <option key={indexName} value={indexName}>
+                                        {userData.indicies[indexName].friendly_name}
+                                    </option>
+                                ))}
                             </select>
                             <br/>
 
@@ -85,9 +102,11 @@ function Sidebar({ temperature,
                                 value={model}
                                 onChange={(e) => setModel(e.target.value)}
                             >
-                                <option value="gpt-3.5-turbo">OpenAI: GPT 3.5
-                                    Turbo
-                                </option>
+                                {Object.keys(userData.models).map((modelName) => (
+                                    <option key={modelName} value={modelName}>
+                                        {userData.models[modelName].friendly_name}
+                                    </option>
+                                ))}
                                 {/* Add other model options here */}
                             </select>
                         </div>

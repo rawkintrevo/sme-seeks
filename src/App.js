@@ -26,6 +26,7 @@ function App({ app }) {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setUser(user);
+            console.log(user)
             setLoading(false);
         });
 
@@ -61,6 +62,7 @@ function App({ app }) {
                         setModel={setModel}
                         setChatId={setChatId}
                         user={user}
+                        db={db}
                     />
                     {chatId && (
                         <Chat
