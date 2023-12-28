@@ -19,6 +19,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// eslint-disable-next-line
 const analytics = getAnalytics(app);
 
 const rootElement = document.getElementById('root');
