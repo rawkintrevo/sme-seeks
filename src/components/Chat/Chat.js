@@ -24,8 +24,6 @@ function Chat({
         try {
             const unsubscribe = onSnapshot(chatRef, (doc) => {
                 if (doc.exists()) {
-                    console.log("Doc exists: ", chatId, doc)
-                    console.log(doc.exists())
                     const data = doc.data() || {};
                     setMessages(data.messages || []);
                     setNewChat(false);
@@ -58,6 +56,9 @@ function Chat({
                     { text: "ooook, cannn doooo...", isUser: false },
                     { text: '', isUser: false },
                 ],
+                title: "New Chat",
+                lastAccess: new Date(),
+                usersWithAccess: [user.uid]
             }, { merge: true });
             setNewChat(false);
         } else {
@@ -67,7 +68,8 @@ function Chat({
                     ...messages,
                     { text: query, isUser: true },
                     { text: '', isUser: false },
-                ]
+                ],
+                lastAccess: new Date(),
             })
         }
 

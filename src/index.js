@@ -29,6 +29,7 @@ ReactDOM.createRoot(rootElement).render(
         <Router>
             <Routes>
                 <Route path="/" element={<App app={app} />} />
+                <Route path="/:chat_id" element={<App app={app} />} />
                 <Route path="/login" element={<Login app={app} />} />
             </Routes>
         </Router>

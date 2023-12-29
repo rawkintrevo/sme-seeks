@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { collection, doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot, deleteDoc, updateDoc, FieldValue } from 'firebase/firestore';
 import Accordion from 'react-bootstrap/Accordion';
 import {Button,
-        Form} from "react-bootstrap";
+        Form,
+        ListGroup} from "react-bootstrap";
 import { getAuth, signOut } from "firebase/auth";
+import { Link } from 'react-router-dom';
+import { FaEdit, FaShare, FaTrash } from 'react-icons/fa';
 
 import "./custom.css"
 
@@ -22,6 +25,19 @@ function Sidebar({
                  }) {
 
     const [userData, setUserData] = useState({});
+    const [chatsArray, setChatsArray] = useState([])
+
+    const handleDeleteChat = (chatId) => {
+        const userDocRef = doc(collection(db, 'user'), userProp.uid);
+
+        // 1. Update the user's data to remove the chat
+        // Replace 'userDocRef' with a reference to the user's document in your database
+        updateDoc(userDocRef, {  [`chats.${chatId}`]: null,})
+
+        // 2. Remove the chat document from the chats collection
+        // Replace 'chatsCollectionRef' with a reference to your chats collection in your database
+        deleteDoc(doc(db, 'chat', chatId))
+    };
 
     useEffect(() => {
         const userRef = doc(collection(db, 'user'), userProp.uid);
@@ -30,13 +46,22 @@ function Sidebar({
             const unsubscribe = onSnapshot(userRef, (doc) => {
                 const data = doc.data() || {};
                 setUserData(data);
+
+                // Create an array of chat objects and filter out chats without lastAccessed
+                const chatsArrayData = Object.entries(userData?.chats || {})
+                    .map(([chatId, chatData]) => ({ chatId, ...chatData }))
+                    .filter((chat) => chat.lastAccessed) // Filter out chats without lastAccessed
+                    .sort((a, b) => b.lastAccessed.localeCompare(a.lastAccessed));
+
+                setChatsArray(chatsArrayData);
             });
+
 
             return () => unsubscribe();
         } catch (error) {
             console.error('Error attaching onSnapshot listener:', error);
         }
-    }, [db, userProp]);
+    }, [db, userProp, userData]);
 
     const handleSignOut = () => {
         const auth = getAuth();
@@ -57,6 +82,7 @@ function Sidebar({
                  textAlign: 'left',
              }}>
             <h2>Mr. SMEseeks</h2>
+            <Button variant="primary" href="/" style={{ marginBottom: '20px' }}>New Chat</Button>
             <Accordion >
                 <Accordion.Item eventKey="0">
                     <Accordion.Header>Knobs and Dials</Accordion.Header>
@@ -124,15 +150,31 @@ function Sidebar({
                 <Accordion.Item eventKey="1">
                     <Accordion.Header>Chats</Accordion.Header>
                     <Accordion.Body>
-                        {userData && userData.chats && Array.isArray(userData.chats) ? (
-                            userData.chats.map((chat, index) => (
-                                <div key={index}>{chat}</div>
-                            ))
+                        {chatsArray.length > 0 ? (
+                            <ListGroup>
+                                {chatsArray.map((chat, index) => (
+                                    <ListGroup.Item key={index} className="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <Link to={`/${chat.chatId}`}>{chat.title}</Link>
+                                        </div>
+                                        <div>
+                                            <FaEdit className="mx-2" />
+                                            <FaShare className="mx-2" />
+                                            <FaTrash
+                                                className="mx-2"
+                                                onClick={() => handleDeleteChat(chat.chatId)}
+                                                // Pass the chatId to the handleDeleteChat function
+                                            />
+                                        </div>
+                                    </ListGroup.Item>
+                                ))}
+                            </ListGroup>
                         ) : (
                             <div>No chats available</div>
                         )}
                     </Accordion.Body>
                 </Accordion.Item>
+
                 <Accordion.Item eventKey="2">
                     <Accordion.Header>User</Accordion.Header>
                     <Accordion.Body>

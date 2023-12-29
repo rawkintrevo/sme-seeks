@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar/Sidebar';
 import Chat from './components/Chat/Chat';
+import { useLocation } from 'react-router-dom';
 
 function App({ app }) {
     const functions = getFunctions(app);
@@ -23,20 +24,24 @@ function App({ app }) {
     const [index, setIndex] = useState('huggingface-docs-test-23-12-22');
     const [model, setModel] = useState('gpt-3.5-turbo');
 
+    const location = useLocation();
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const chatIdFromSlug = location.pathname.substring(1); // Get the slug from the pathname
+        const chatIdFromQuery = urlParams.get('chatId');
+        setChatId(chatIdFromSlug || chatIdFromQuery || uuidv4());
+    }, [location]);
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
             setUser(user);
-            console.log(user)
             setLoading(false);
         });
 
         return unsubscribe;
     }, [auth]);
 
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        setChatId(urlParams.get('chatId') || uuidv4());
-    }, []);
 
     if (loading) {
         return <div>Loading...</div>;
