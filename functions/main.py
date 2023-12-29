@@ -2,7 +2,7 @@ from firebase_functions import https_fn
 from firebase_admin import initialize_app
 from firebase_functions.params import StringParam
 import pinecone
-from llama_index.llms import OpenAI
+from llama_index.llms import OpenAI, ChatMessage
 from llama_index import VectorStoreIndex
 from llama_index.vector_stores import PineconeVectorStore
 from google.cloud import firestore
@@ -27,6 +27,8 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
     temperature = float(req.data.get('temperature', 0.1))
     top_k = int(req.data.get('top_k', 3))
     model = req.data.get('model', 'gpt-3.5-turbo')
+
+    if verbose: print(temperature)
 
     if not uid or not chat_id or not query:
         return {"error": "Missing required data"}
@@ -60,19 +62,34 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
 
         pinecone.init(api_key=pinecone_api_key, environment="gcp-starter")
         pinecone_index = pinecone.Index(index_name)
-        openai.api_key = openai_api_key.value
+        openai.api_key = user_doc_data.get('models', {}).get(index_name, {}).get('api_key', '')
+        if not openai_api_key:
+            return {'error': "Invalid OpenAI API Key"}
 
         vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
         index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
-        llm = OpenAI(model=model, temperature=temperature)
-        query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
-        response = query_engine.query(query)
-
+        llm = OpenAI(model=model, temperature=temperature, reuse_client=False)
+        if verbose: print("llm ", llm)
         # Update Firestore document with response
         chat_ref = db.collection(collection_name).document(chat_id)
         chat_data = chat_ref.get().to_dict()
         messages = chat_data.get('messages', [])
+
+        if verbose: print("loaded chat history")
+        # query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
+        query_engine = index.as_chat_engine(similarity_top_k=top_k, streaming=True)
+
+        if verbose: print("query engine built" )
+        role_map = {True: "user", False: "assistant"}
+        loaded_messages = [
+                              ChatMessage(role="system", content="You capture some of the essence of Mr. Meeseeks' character (from Rick and Morty), who is known for his eagerness to help, his frustration when tasks become too challenging, and his desire for a quick resolution to his existence.")
+                          ] + [ChatMessage(role=role_map[m['isUser']], content=m["text"]) for m in messages[:-1]]
+
+        if verbose: print("messages: ", loaded_messages)
+
+        response = query_engine.stream_chat(query, chat_history = loaded_messages) #, chat_history: Optional[List[ChatMessage]] = None)
+        # response = query_engine.query(query)
 
         if messages == []:
             print('WARNING: messages were empty ?')
