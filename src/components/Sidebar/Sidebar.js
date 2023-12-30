@@ -41,7 +41,7 @@ function Sidebar({
 
     useEffect(() => {
         const userRef = doc(collection(db, 'user'), userProp.uid);
-
+        console.log('useEffect in Sidebar.js');
         try {
             const unsubscribe = onSnapshot(userRef, (doc) => {
                 const data = doc.data() || {};
@@ -61,7 +61,8 @@ function Sidebar({
         } catch (error) {
             console.error('Error attaching onSnapshot listener:', error);
         }
-    }, [db, userProp, userData]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [db, userProp]);
 
     const handleSignOut = () => {
         const auth = getAuth();
@@ -107,8 +108,8 @@ function Sidebar({
                                     onChange={(e) => setTopK(parseInt(e.target.value))}
                                 >
                                     {[...Array(21).keys()].map((number) => (
-                                        <option key={number} value={number}>
-                                            {number}
+                                        <option key={number +1} value={number +1}>
+                                            {number +1}
                                         </option>
                                     ))}
                                 </Form.Select>
