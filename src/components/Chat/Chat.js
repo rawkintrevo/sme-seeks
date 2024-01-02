@@ -103,13 +103,13 @@ function Chat({
                     <div className="chat-input">
                         <form onSubmit={handleSubmit}>
                             <div className="mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Type your message..."
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                />
+                            <textarea
+                                className="form-control"
+                                placeholder="Type your message..."
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                rows="4" // Set the number of visible rows
+                            />
                             </div>
                             <button
                                 type="button"

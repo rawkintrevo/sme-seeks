@@ -51,8 +51,12 @@ function Sidebar({
                 const chatsArrayData = Object.entries(data?.chats || {})
                     .map(([chatId, chatData]) => ({ chatId, ...chatData }))
                     .filter((chat) => chat.lastAccessed) // Filter out chats without lastAccessed
-                    .sort((a, b) => b.lastAccessed.localeCompare(a.lastAccessed));
-
+                    .sort((a, b) => {
+                        if (a.lastAccessed instanceof Date && b.lastAccessed instanceof Date) {
+                            return b.lastAccessed.localeCompare(a.lastAccessed);
+                        }
+                        return 0; // Return 0 for invalid dates to maintain the original order
+                    });
                 setChatsArray(chatsArrayData);
             });
 
