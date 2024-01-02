@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { httpsCallable } from 'firebase/functions';
 import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Chat({
                   chatId,
@@ -18,6 +18,9 @@ function Chat({
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState([]);
+
+    // Access the history object
+    const navigate = useNavigate();
 
     useEffect(() => {
         const chatRef = doc(collection(db, 'chat'), chatId);
@@ -64,7 +67,7 @@ function Chat({
             setNewChat(false);
 
             // Redirect to `/{chatId}`
-            history.push(`/${chatId}`);
+            navigate(`/${chatId}`);
         } else {
             const chatRef = doc(collection(db, 'chat'), chatId);
             setDoc(chatRef, {
