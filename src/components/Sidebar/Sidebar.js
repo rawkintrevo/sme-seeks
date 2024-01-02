@@ -48,7 +48,7 @@ function Sidebar({
                 setUserData(data);
 
                 // Create an array of chat objects and filter out chats without lastAccessed
-                const chatsArrayData = Object.entries(userData?.chats || {})
+                const chatsArrayData = Object.entries(data?.chats || {})
                     .map(([chatId, chatData]) => ({ chatId, ...chatData }))
                     .filter((chat) => chat.lastAccessed) // Filter out chats without lastAccessed
                     .sort((a, b) => b.lastAccessed.localeCompare(a.lastAccessed));
@@ -62,7 +62,7 @@ function Sidebar({
             console.error('Error attaching onSnapshot listener:', error);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [db, userProp]);
+    }, [db, userProp.uid]);
 
     const handleSignOut = () => {
         const auth = getAuth();
