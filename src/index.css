@@ -34,14 +34,14 @@ code {
 }
 
 .user {
-  background-color: #0074cc; /* Blue color for user messages */
-  color: white;
+  background-color: lightblue;
+  color: dimgray;
   align-self: flex-end;
   margin-left: auto;
 }
 
 .ai {
-  background-color: #ff3333; /* Red color for AI messages */
+  background-color: dimgray;
   color: white;
 }
 

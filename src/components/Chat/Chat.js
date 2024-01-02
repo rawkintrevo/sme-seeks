@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { httpsCallable } from 'firebase/functions';
-import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore
+import { useHistory } from 'react-router-dom';
 
 function Chat({
                   chatId,
@@ -61,6 +62,9 @@ function Chat({
                 usersWithAccess: [user.uid]
             }, { merge: true });
             setNewChat(false);
+
+            // Redirect to `/{chatId}`
+            history.push(`/${chatId}`);
         } else {
             const chatRef = doc(collection(db, 'chat'), chatId);
             setDoc(chatRef, {
