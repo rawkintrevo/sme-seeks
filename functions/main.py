@@ -7,6 +7,7 @@ from llama_index import VectorStoreIndex
 from llama_index.vector_stores import PineconeVectorStore
 from google.cloud import firestore
 import openai
+from datetime import datetime
 
 # Initialize Firebase
 initialize_app()
@@ -35,22 +36,20 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
 
     user_doc_ref = db.collection('user').document(uid)
 
-    try:
-        user_data = user_doc_ref.get()
-        if user_data.exists:
-            user_doc_data = user_data.to_dict()
-            chats = user_doc_data.get('chats', [])
-            if chat_id not in chats:
-                chats.append(chat_id)
-                user_doc_ref.update({'chats': chats})
-        else:
-            return {"error": "User does not exist"}
-    except Exception as e:
-        return {"error": str(e)}
-
-    if verbose:
-        print("retrieved user data")
-        print(user_doc_data)
+    # try:
+    user_data = user_doc_ref.get()
+    if user_data.exists:
+        user_doc_data = user_data.to_dict()
+        if verbose: print(f"user_doc_data: {user_doc_data}")
+        chats = user_doc_data.get('chats', []) # a list of dictionaries
+        if verbose: print(f"chats: {chats}")
+        if chat_id not in chats.keys():
+            chats[chat_id] = {"title": "New Chat", "lastAccessed": datetime.now()}
+            user_doc_ref.update({'chats': chats})
+    else:
+        return {"error": "User does not exist"}
+    # except Exception as e:
+    #     return {"error (line 49)": str(e)}
 
     collection_name = 'chat'
     document_id = chat_id
@@ -83,7 +82,10 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
         if verbose: print("query engine built" )
         role_map = {True: "user", False: "assistant"}
         loaded_messages = [
-                              ChatMessage(role="system", content="You capture some of the essence of Mr. Meeseeks' character (from Rick and Morty), who is known for his eagerness to help, his frustration when tasks become too challenging, and his desire for a quick resolution to his existence.")
+                              ChatMessage(role="system",
+                                          #   content="You capture some of the essence of Mr. Meeseeks' character (from Rick and Morty), who is known for his eagerness to help, his frustration when tasks become too challenging, and his desire for a quick resolution to his existence."
+                                          content="You are a helpful AI assistant, who helps the user compose code for their project. You provide examples where possible. You understand the user cannot easily see the context you can see, so when asked for an example or any other task you do it, and do not instruct the user to look at the context."
+                                          )
                           ] + [ChatMessage(role=role_map[m['isUser']], content=m["text"]) for m in messages[:-1]]
 
         if verbose: print("messages: ", loaded_messages)
@@ -107,4 +109,4 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
 
         return {"status": "success"}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error line 110": str(e)}
