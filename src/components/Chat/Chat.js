@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
 import { httpsCallable } from 'firebase/functions';
 import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
+import ChatBubble from "../ChatBubble/ChatBubble";
 
 function Chat({
                   chatId,
@@ -102,9 +102,7 @@ function Chat({
                 <div className="chat-container">
                     <div className="chat-messages">
                         {messages.map((message, index) => (
-                            <div key={index} className={`message ${message.isUser ? "user" : "ai"}`}>
-                                <ReactMarkdown>{message.text}</ReactMarkdown>
-                            </div>
+                            <ChatBubble key={index} message={message} />
                         ))}
                     </div>
                     <div className="chat-input">

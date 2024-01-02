@@ -29,7 +29,7 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
     top_k = int(req.data.get('top_k', 3))
     model = req.data.get('model', 'gpt-3.5-turbo')
 
-    if verbose: print(temperature)
+    if verbose: print(f"Top K: {top_k}")
 
     if not uid or not chat_id or not query:
         return {"error": "Missing required data"}
@@ -44,7 +44,7 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
         chats = user_doc_data.get('chats', []) # a list of dictionaries
         if verbose: print(f"chats: {chats}")
         if chat_id not in chats.keys():
-            chats[chat_id] = {"title": "New Chat", "lastAccessed": datetime.now()}
+            chats[chat_id] = {"title": f"New Chat - {chat_id[-6: ]}", "lastAccessed": datetime.now()}
             user_doc_ref.update({'chats': chats})
     else:
         return {"error": "User does not exist"}
@@ -79,7 +79,7 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
         # query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
         query_engine = index.as_chat_engine(similarity_top_k=top_k, streaming=True)
 
-        if verbose: print("query engine built" )
+        if verbose: print("query engine built", query_engine )
         role_map = {True: "user", False: "assistant"}
         loaded_messages = [
                               ChatMessage(role="system",
@@ -91,21 +91,34 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
         if verbose: print("messages: ", loaded_messages)
 
         response = query_engine.stream_chat(query, chat_history = loaded_messages) #, chat_history: Optional[List[ChatMessage]] = None)
+        if verbose: print("response: ", response)
         # response = query_engine.query(query)
 
         if messages == []:
             print('WARNING: messages were empty ?')
 
-        sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : ""} for source_node in response.source_nodes]
+        # source_nodes = response.source_nodes
+        sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
+        # sources = response.sources
+        if verbose: print("sources: ", sources)
+        # if verbose: print("source_nodes: ", source_nodes)
+
+        # sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
+        # if verbose: print("sources: ", sources)
+        # if verbose: print("ll_source_nodes: ", ll_source_nodes)
+        # if verbose: print("formatted_sources: ", response.get_formatted_sources())
 
         # Append tokens to the last message's 'text' field
         for token in response.response_gen:
             last_message = messages[-1]
             last_message_text = last_message.get('text', '')
             new_text = last_message_text + token
+
             last_message['text'] = new_text
             last_message['sources'] = sources
             chat_ref.update({'messages': messages})
+
+
 
         return {"status": "success"}
     except Exception as e:
