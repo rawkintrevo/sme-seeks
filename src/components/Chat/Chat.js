@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { httpsCallable } from 'firebase/functions';
-import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore
+import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useHistory } from 'react-router-dom';
 
 function Chat({
