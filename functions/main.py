@@ -55,74 +55,73 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
     collection_name = 'chat'
     document_id = chat_id
 
-    try:
-        pinecone_api_key = user_doc_data.get('indicies', {}).get(index_name, {}).get('api_key', '')
-        if not pinecone_api_key:
-            return {"error": "Invalid Pinecone API Key"}
+    # try:
+    pinecone_api_key = user_doc_data.get('indicies', {}).get(index_name, {}).get('api_key', '')
+    if not pinecone_api_key:
+        return {"error": "Invalid Pinecone API Key"}
 
-        pinecone.init(api_key=pinecone_api_key, environment="gcp-starter")
-        pinecone_index = pinecone.Index(index_name)
-        openai.api_key = user_doc_data.get('models', {}).get(index_name, {}).get('api_key', '')
-        if not openai_api_key:
-            return {'error': "Invalid OpenAI API Key"}
+    pinecone.init(api_key=pinecone_api_key, environment="gcp-starter")
+    pinecone_index = pinecone.Index(index_name)
+    openai.api_key = user_doc_data.get('models', {}).get(index_name, {}).get('api_key', '')
+    if not openai_api_key:
+        return {'error': "Invalid OpenAI API Key"}
 
-        vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-        index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+    vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+    index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
 
-        llm = OpenAI(model=model, temperature=temperature, reuse_client=False)
-        if verbose: print("llm ", llm)
-        # Update Firestore document with response
-        chat_ref = db.collection(collection_name).document(chat_id)
-        chat_data = chat_ref.get().to_dict()
-        messages = chat_data.get('messages', [])
+    llm = OpenAI(model=model, temperature=temperature, reuse_client=False)
+    if verbose: print("llm ", llm)
+    # Update Firestore document with response
+    chat_ref = db.collection(collection_name).document(chat_id)
+    chat_data = chat_ref.get().to_dict()
+    messages = chat_data.get('messages', [])
 
-        if verbose: print("loaded chat history")
-        # query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
-        query_engine = index.as_chat_engine(similarity_top_k=top_k,
-                                            streaming=True,
-                                            chat_mode=ChatMode.REACT)
+    if verbose: print("loaded chat history")
+    # query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
+    query_engine = index.as_chat_engine(similarity_top_k=top_k,
+                                        streaming=True,
+                                        chat_mode=ChatMode.CONTEXT)
 
-        if verbose: print("query engine built", query_engine )
-        role_map = {True: "user", False: "assistant"}
-        loaded_messages = [
-                              ChatMessage(role="system",
-                                          #   content="You capture some of the essence of Mr. Meeseeks' character (from Rick and Morty), who is known for his eagerness to help, his frustration when tasks become too challenging, and his desire for a quick resolution to his existence."
-                                          content="You are a helpful AI assistant, who helps the user compose code for their project. You provide examples where possible. You understand the user cannot easily see the context you can see, so when asked for an example or any other task you do it, and do not instruct the user to look at the context."
-                                          )
-                          ] + [ChatMessage(role=role_map[m['isUser']], content=m["text"]) for m in messages[:-1]]
+    if verbose: print("query engine built", query_engine )
+    role_map = {True: "user", False: "assistant"}
+    loaded_messages = [
+                          ChatMessage(role="system",
+                                      #   content="You capture some of the essence of Mr. Meeseeks' character (from Rick and Morty), who is known for his eagerness to help, his frustration when tasks become too challenging, and his desire for a quick resolution to his existence."
+                                      content="You are a helpful AI assistant, who helps the user compose code for their project. You provide examples where possible. You understand the user cannot easily see the context you can see, so when asked for an example or any other task you do it, and do not instruct the user to look at the context."
+                                      )
+                      ] + [ChatMessage(role=role_map[m['isUser']], content=m["text"]) for m in messages[:-1]]
 
-        if verbose: print("messages: ", loaded_messages)
+    if verbose: print("messages: ", loaded_messages)
 
-        response = query_engine.stream_chat(query, chat_history = loaded_messages) #, chat_history: Optional[List[ChatMessage]] = None)
-        if verbose: print("response: ", response)
-        # response = query_engine.query(query)
+    response = query_engine.stream_chat(query, chat_history = loaded_messages) #, chat_history: Optional[List[ChatMessage]] = None)
+    # if verbose: print("response: ", response)
+    # response = query_engine.query(query)
 
-        if messages == []:
-            print('WARNING: messages were empty ?')
+    if messages == []:
+        print('WARNING: messages were empty ?')
 
-        # source_nodes = response.source_nodes
-        sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
-        # sources = response.sources
-        if verbose: print("sources: ", sources)
-        # if verbose: print("source_nodes: ", source_nodes)
+    sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
+    # sources = response.sources
+    if verbose: print("sources: ", sources)
+    # if verbose: print("source_nodes: ", source_nodes)
 
-        # sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
-        # if verbose: print("sources: ", sources)
-        # if verbose: print("ll_source_nodes: ", ll_source_nodes)
-        # if verbose: print("formatted_sources: ", response.get_formatted_sources())
+    # sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
+    # if verbose: print("sources: ", sources)
+    # if verbose: print("ll_source_nodes: ", ll_source_nodes)
+    # if verbose: print("formatted_sources: ", response.get_formatted_sources())
 
-        # Append tokens to the last message's 'text' field
-        for token in response.response_gen:
-            last_message = messages[-1]
-            last_message_text = last_message.get('text', '')
-            new_text = last_message_text + token
+    # Append tokens to the last message's 'text' field
+    for token in response.response_gen:
+        last_message = messages[-1]
+        last_message_text = last_message.get('text', '')
+        new_text = last_message_text + token
 
-            last_message['text'] = new_text
-            last_message['sources'] = sources
-            chat_ref.update({'messages': messages})
-
+        last_message['text'] = new_text
+        last_message['sources'] = sources
+        chat_ref.update({'messages': messages})
 
 
-        return {"status": "success"}
-    except Exception as e:
-        return {"error line 110": str(e)}
+
+    return {"status": "success"}
+    # except Exception as e:
+    #     return {"error line 110": str(e)}

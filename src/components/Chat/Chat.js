@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,9 @@ function Chat({
     const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState([]);
+
+    const lastChatBubbleRef = useRef(null);
+    const chatContainerRef = useRef(null);
 
     // Access the history object
     const navigate = useNavigate();
@@ -41,6 +44,15 @@ function Chat({
             console.error('Error attaching onSnapshot listener:', error);
         }
     }, [chatId, db]);
+
+    useEffect(() => {
+        // Scroll to the bottom of the chat container
+        // chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        // Scroll to the last chat bubble
+        if (lastChatBubbleRef.current) {
+            lastChatBubbleRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages]);
 
     const handleSubmit = (e) => {
         e.preventDefault(); // Prevent form submission and page refresh
@@ -99,11 +111,12 @@ function Chat({
     return (
         <div className="col-md-9">
             <div className="container">
-                <div className="chat-container">
+                <div className="chat-container" ref={chatContainerRef}>
                     <div className="chat-messages">
                         {messages.map((message, index) => (
                             <ChatBubble key={index} message={message} />
                         ))}
+                        <div ref={lastChatBubbleRef} />
                     </div>
                     <div className="chat-input">
                         <form onSubmit={handleSubmit}>

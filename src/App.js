@@ -20,7 +20,7 @@ function App({ app }) {
     const [chatId, setChatId] = useState(null);
 
     const [temperature, setTemperature] = useState(0.1);
-    const [topK, setTopK] = useState(5);
+    const [topK, setTopK] = useState(2);
     const [index, setIndex] = useState('huggingface-docs-test-23-12-22');
     const [model, setModel] = useState('gpt-3.5-turbo');
 
