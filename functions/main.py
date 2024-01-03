@@ -8,6 +8,7 @@ from llama_index.vector_stores import PineconeVectorStore
 from google.cloud import firestore
 import openai
 from datetime import datetime
+from llama_index.chat_engine.types import ChatMode
 
 # Initialize Firebase
 initialize_app()
@@ -77,7 +78,9 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
 
         if verbose: print("loaded chat history")
         # query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
-        query_engine = index.as_chat_engine(similarity_top_k=top_k, streaming=True)
+        query_engine = index.as_chat_engine(similarity_top_k=top_k,
+                                            streaming=True,
+                                            chat_mode=ChatMode.REACT)
 
         if verbose: print("query engine built", query_engine )
         role_map = {True: "user", False: "assistant"}
