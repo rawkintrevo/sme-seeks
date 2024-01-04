@@ -1,22 +1,18 @@
 import React, { useState } from 'react';
+import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import {
     GoogleAuthProvider,
     signInWithEmailAndPassword,
     signInWithPopup,
-    getAuth} from "firebase/auth";
-import {useNavigate} from "react-router-dom";
-import {getFirestore} from "firebase/firestore"; // Import Firebase Auth
-import {getDoc, doc, setDoc } from "firebase/firestore";
-// import {
-//
-//     connectAuthEmulator,
-//     getAuth,
-//     onAuthStateChanged,
-//     signInWithPopup,
-//     signOut,
-// } from 'firebase/auth';
+    getAuth
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import { getFirestore } from "firebase/firestore";
+import { getDoc, doc, setDoc } from "firebase/firestore";
 
-function Login({app})  {
+import "./custom.css"
+
+function Login({ app }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -59,24 +55,47 @@ function Login({app})  {
     };
 
     return (
-        <div className="login-container">
-            {/* Login form elements and styling */}
-            <h2>Login</h2>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-            />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-            />
-            <button onClick={handleEmailSignIn}>Sign In</button>
+        <div style={{ backgroundColor: "lightcyan" }}>
+        <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
+            <Row>
+                <Col>
+                    <Card>
+                        <Card.Body>
+                            <h2>Login</h2>
+                            <Form>
+                                <Form.Group controlId="formEmail">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        placeholder="Email"
+                                    />
+                                </Form.Group>
 
-            <button onClick={handleGoogleSignIn}>Sign In with Google</button>
+                                <Form.Group controlId="formPassword">
+                                    <Form.Label>Password</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="Password"
+                                    />
+                                </Form.Group>
+
+                                <div className="d-grid gap-2 mt-3">
+                                    <Button variant="primary" onClick={handleEmailSignIn}>Sign In</Button>
+                                </div>
+
+                                <div className="d-grid gap-2 mt-3">
+                                    <Button variant="primary" onClick={handleGoogleSignIn}>Sign In with Google</Button>
+                                </div>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
         </div>
     );
 };
