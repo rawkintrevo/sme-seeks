@@ -55,7 +55,7 @@ function Login({ app }) {
     };
 
     return (
-        <div style={{ backgroundColor: "lightcyan" }}>
+<div className="login">
         <Container className="d-flex align-items-center justify-content-center" style={{ minHeight: "100vh" }}>
             <Row>
                 <Col>
@@ -96,7 +96,8 @@ function Login({ app }) {
                 </Col>
             </Row>
         </Container>
-        </div>
+    </div>
+
     );
 };
 
