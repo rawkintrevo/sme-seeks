@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { FaFile, FaComment, FaInfoCircle } from 'react-icons/fa';
+import { RxText, RxQuote, RxInfoCircled } from "react-icons/rx";
 
 function ChatBubble({ message }) {
     const [showSources, setShowSources] = useState(false);
@@ -58,17 +58,17 @@ function ChatBubble({ message }) {
                 )}
             </div>
             <div className="message-icons">
-                <FaComment
+                <RxText
                     className={`message-icon ${showSources ? "active" : ""}`}
                     onClick={handleToggleText}
                 />
                 {hasSources && (
-                    <FaFile
+                    <RxQuote
                         className={`message-icon ${showSources ? "" : "active"}`}
                         onClick={handleToggleSources}
                     />
                 )}
-                {hasMetadata && (<FaInfoCircle
+                {hasMetadata && (<RxInfoCircled
                     className={`message-icon ${showMetadata ? "active" : ""}`}
                     onClick={handleToggleMetadata}
                 />
