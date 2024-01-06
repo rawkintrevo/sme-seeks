@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { collection, doc, onSnapshot, deleteDoc, updateDoc } from 'firebase/firestore';
 import Accordion from 'react-bootstrap/Accordion';
-import {Button,
-        Form,
-        ListGroup} from "react-bootstrap";
+import {
+    Button,
+    Form,
+    ListGroup, Modal
+} from "react-bootstrap";
 import { getAuth, signOut } from "firebase/auth";
 import { Link } from 'react-router-dom';
 import { FaEdit, FaShare, FaTrash } from 'react-icons/fa';
 
 import "./custom.css"
+import AddOpenAiApiKey from "../AddOpenAiApiKey/AddOpenAiApiKey";
 
 function Sidebar({
-                     temperature,
+                         temperature,
                      setTemperature,
                      topK,
                      setTopK,
@@ -26,7 +29,19 @@ function Sidebar({
 
     const [userData, setUserData] = useState({});
     const [chatsArray, setChatsArray] = useState([])
+    const [showOpenAiApiKeyPopup, setShowOpenAiApiKeyPopup] = useState(false);
 
+    const hasOpenAIModel = Object.values(userData?.models || {}).some(
+        (model) => model.type === 'openai'
+    );
+
+    const handleAddOpenAIKey = () => {
+        setShowOpenAiApiKeyPopup(true);
+    };
+
+    const handleCloseOpenAiApiKeyPopup = () => {
+        setShowOpenAiApiKeyPopup(false);
+    }
     const handleDeleteChat = (chatId) => {
         const userDocRef = doc(collection(db, 'user'), userProp.uid);
 
@@ -183,11 +198,33 @@ function Sidebar({
                 <Accordion.Item eventKey="2">
                     <Accordion.Header>User</Accordion.Header>
                     <Accordion.Body>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                        {!hasOpenAIModel && (
+                            <Button variant="primary"
+                                    onClick={handleAddOpenAIKey}
+                                    style={{ marginBottom: '10px' }}>
+                                Add OpenAI API Key
+                            </Button>
+                        )}
                         <Button variant="danger" onClick={handleSignOut}>Sign Out</Button>
+                        </div>
                     </Accordion.Body>
 
                 </Accordion.Item>
+
             </Accordion>
+            <Modal show={showOpenAiApiKeyPopup} onHide={handleCloseOpenAiApiKeyPopup}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add OpenAI API Key</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <AddOpenAiApiKey onClose={handleCloseOpenAiApiKeyPopup}
+                                     uid={userProp.uid}
+                                     existingModels={userData?.models || {}}
+                                     db={db}
+                    />
+                </Modal.Body>
+            </Modal>
         </div>
 
     );
