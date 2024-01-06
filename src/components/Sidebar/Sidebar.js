@@ -56,7 +56,6 @@ function Sidebar({
 
     useEffect(() => {
         const userRef = doc(collection(db, 'user'), userProp.uid);
-        console.log('useEffect in Sidebar.js');
         try {
             const unsubscribe = onSnapshot(userRef, (doc) => {
                 const data = doc.data() || {};
