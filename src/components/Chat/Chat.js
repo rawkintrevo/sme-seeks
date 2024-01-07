@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import ChatBubble from "../ChatBubble/ChatBubble";
 import {Button, Modal} from "react-bootstrap";
 import AddIndex from "../AddIndex/AddIndex";
+import ServerErrorPopup from "../ServerErrorPopup/ServerErrorPopup";
 
 function Chat({
                   chatId,
@@ -113,10 +114,12 @@ function Chat({
             if (response.data.status === 'success') {
                 // Do nothing
             } else if (response.data.status === 'error') {
-                console.log('ruh-roh');
+                console.log('ruh-roh', response);
+                console.log(response.data.error_message);
+
+                setServerErrorMessage(response.data.error_message);
+                setServerErrorStackTrace(response.data.stack_trace);
                 setShowServerErrorPopup(true);
-                setServerErrorMessage(response.error_message);
-                setServerErrorStackTrace(response.stack_trace);
             }
             setQuery('');
             setLoading(false);
@@ -161,7 +164,7 @@ function Chat({
                     <Modal.Title>I just want to DIE!</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <AddIndex closePopup={handleCloseServerErrorPopup}
+                    <ServerErrorPopup closePopup={handleCloseServerErrorPopup}
                               errorMessage={serverErrorMessage}
                               stackTrace={serverErrorStackTrace}
                     />
