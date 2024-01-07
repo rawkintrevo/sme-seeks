@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from "react-router-dom";
+
 
 const ServerErrorPopup = ({ closePopup, errorMessage, stackTrace }) => {
     return (
@@ -8,7 +8,7 @@ const ServerErrorPopup = ({ closePopup, errorMessage, stackTrace }) => {
             Send Trevor the info below and he'll look into it. <br />
             Alternatively, you could try to help; code is&nbsp;
             <a href={"https://github.com/rawkintrevo/sme-seeks/blob/main/functions/main.py"}
-               target={"_blank"}>
+               rel={"noopener"}>
                 here
             </a>.
             <h5>Error Message:</h5>
