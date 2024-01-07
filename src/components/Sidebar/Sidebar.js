@@ -12,6 +12,7 @@ import { FaEdit, FaShare, FaTrash } from 'react-icons/fa';
 
 import "./custom.css"
 import AddOpenAiApiKey from "../AddOpenAiApiKey/AddOpenAiApiKey";
+import AddIndex from "../AddIndex/AddIndex";
 
 function Sidebar({
                          temperature,
@@ -30,10 +31,19 @@ function Sidebar({
     const [userData, setUserData] = useState({});
     const [chatsArray, setChatsArray] = useState([])
     const [showOpenAiApiKeyPopup, setShowOpenAiApiKeyPopup] = useState(false);
+    const [showAddIndexPopup, setShowAddIndexPopup] = useState(false);
 
     const hasOpenAIModel = Object.values(userData?.models || {}).some(
         (model) => model.type === 'openai'
     );
+
+    const handleAddIndex = () => {
+        setShowAddIndexPopup(true);
+    }
+
+    const handleCloseAddIndexPopup = () => {
+        setShowAddIndexPopup(false);
+    }
 
     const handleAddOpenAIKey = () => {
         setShowOpenAiApiKeyPopup(true);
@@ -205,6 +215,11 @@ function Sidebar({
                                 Add OpenAI API Key
                             </Button>
                         )}
+                        <Button variant="primary"
+                                onClick={handleAddIndex}
+                                style={{ marginBottom: '10px' }}>
+                            Add Index
+                        </Button>
                         <Button variant="danger" onClick={handleSignOut}>Sign Out</Button>
                         </div>
                     </Accordion.Body>
@@ -220,6 +235,18 @@ function Sidebar({
                     <AddOpenAiApiKey onClose={handleCloseOpenAiApiKeyPopup}
                                      uid={userProp.uid}
                                      existingModels={userData?.models || {}}
+                                     db={db}
+                    />
+                </Modal.Body>
+            </Modal>
+            <Modal show={showAddIndexPopup} onHide={handleCloseAddIndexPopup}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Index</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <AddIndex onClose={handleCloseAddIndexPopup}
+                                     uid={userProp.uid}
+                                     existingIndicies={userData?.indicies || {}}
                                      db={db}
                     />
                 </Modal.Body>
