@@ -3,6 +3,8 @@ import { httpsCallable } from 'firebase/functions';
 import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import ChatBubble from "../ChatBubble/ChatBubble";
+import {Button, Modal} from "react-bootstrap";
+import AddIndex from "../AddIndex/AddIndex";
 
 function Chat({
                   chatId,
@@ -22,8 +24,13 @@ function Chat({
     const lastChatBubbleRef = useRef(null);
     const chatContainerRef = useRef(null);
 
+    const [showServerErrorPopup, setShowServerErrorPopup] = useState(false);
+    const [serverErrorMessage, setServerErrorMessage] = useState('');
+    const [serverErrorStackTrace, setServerErrorStackTrace] = useState('');
     // Access the history object
     const navigate = useNavigate();
+
+    const handleCloseServerErrorPopup = () => setShowServerErrorPopup(false);
 
     useEffect(() => {
         const chatRef = doc(collection(db, 'chat'), chatId);
@@ -69,8 +76,8 @@ function Chat({
             setDoc(chatRef, {
                 messages: [
                     { text: query, isUser: true },
-                    { text: "ooook, cannn doooo...", isUser: false },
-                    { text: '', isUser: false },
+                    { text: "", isUser: false },
+
                 ],
                 title: "New Chat",
                 lastAccess: new Date(),
@@ -102,7 +109,15 @@ function Chat({
             top_k: topK,
             chat_id: chatId,
             uid: user.uid,
-        }).then(() => {
+        }).then((response) => {
+            if (response.data.status === 'success') {
+                // Do nothing
+            } else if (response.data.status === 'error') {
+                console.log('ruh-roh');
+                setShowServerErrorPopup(true);
+                setServerErrorMessage(response.error_message);
+                setServerErrorStackTrace(response.stack_trace);
+            }
             setQuery('');
             setLoading(false);
         });
@@ -141,6 +156,22 @@ function Chat({
                     </div>
                 </div>
             </div>
+            <Modal show={showServerErrorPopup} onHide={handleCloseServerErrorPopup}>
+                <Modal.Header closeButton>
+                    <Modal.Title>I just want to DIE!</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <AddIndex closePopup={handleCloseServerErrorPopup}
+                              errorMessage={serverErrorMessage}
+                              stackTrace={serverErrorStackTrace}
+                    />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseServerErrorPopup}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }
