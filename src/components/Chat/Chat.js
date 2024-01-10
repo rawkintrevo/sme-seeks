@@ -4,7 +4,7 @@ import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import ChatBubble from "../ChatBubble/ChatBubble";
 import {Button, Modal} from "react-bootstrap";
-import AddIndex from "../AddIndex/AddIndex";
+// import AddIndex from "../AddIndex/AddIndex";
 import ServerErrorPopup from "../ServerErrorPopup/ServerErrorPopup";
 
 function Chat({
