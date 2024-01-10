@@ -135,9 +135,9 @@ function Sidebar({
                                     value={topK}
                                     onChange={(e) => setTopK(parseInt(e.target.value))}
                                 >
-                                    {[...Array(11).keys()].map((number) => (
-                                        <option key={number +1} value={number +1}>
-                                            {number +1}
+                                    {[...Array(5).keys()].map((number) => (
+                                        <option key={number} value={number}>
+                                            {number}
                                         </option>
                                     ))}
                                 </Form.Select>

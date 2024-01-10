@@ -5,20 +5,22 @@ import pinecone
 from llama_index.llms import OpenAI, ChatMessage
 from llama_index import VectorStoreIndex
 from llama_index.vector_stores import PineconeVectorStore
+from llama_index.chat_engine import SimpleChatEngine
+from llama_index import ServiceContext
 from google.cloud import firestore
 import openai
 from datetime import datetime
 from llama_index.chat_engine.types import ChatMode
 import traceback
+
 # Initialize Firebase
 initialize_app()
 
-# Parameters
-openai_api_key = StringParam("OPENAI_API_KEY")
 
 @https_fn.on_call()
 def sme(req: https_fn.CallableRequest) -> https_fn.Request:
     try:
+
         verbose = True
         if verbose: print(req.data)
         db = firestore.Client()
@@ -50,25 +52,23 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
                 user_doc_ref.update({'chats': chats})
         else:
             return {"error": "User does not exist"}
-        # except Exception as e:
-        #     return {"error (line 49)": str(e)}
 
         collection_name = 'chat'
         document_id = chat_id
 
-        # try:
-        pinecone_api_key = user_doc_data.get('indicies', {}).get(index_name, {}).get('api_key', '')
-        if not pinecone_api_key:
-            return {"error": "Invalid Pinecone API Key"}
-
-        pinecone.init(api_key=pinecone_api_key, environment="gcp-starter")
-        pinecone_index = pinecone.Index(index_name)
+        if top_k > 0:
+            pinecone_api_key = user_doc_data.get('indicies', {}).get(index_name, {}).get('api_key', '')
+            if not pinecone_api_key:
+                return {"error": "Invalid Pinecone API Key"}
+            pinecone.init(api_key=pinecone_api_key, environment="gcp-starter")
+            pinecone_index = pinecone.Index(index_name)
+            vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
+            index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
         openai.api_key = user_doc_data.get('models', {}).get(index_name, {}).get('api_key', '')
         if not openai_api_key:
             return {'error': "Invalid OpenAI API Key"}
 
-        vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
-        index = VectorStoreIndex.from_vector_store(vector_store=vector_store)
+
 
         llm = OpenAI(model=model, temperature=temperature, reuse_client=False)
         if verbose: print("llm ", llm)
@@ -78,10 +78,13 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
         messages = chat_data.get('messages', [])
 
         if verbose: print("loaded chat history")
-        # query_engine = index.as_query_engine(llm=llm, similarity_top_k=top_k, streaming=True)
-        query_engine = index.as_chat_engine(similarity_top_k=top_k,
-                                            streaming=True,
-                                            chat_mode=ChatMode.CONTEXT)
+        if top_k >0:
+            query_engine = index.as_chat_engine(similarity_top_k=top_k,
+                                                streaming=True,
+                                                chat_mode=ChatMode.CONTEXT)
+        else:
+            service_context = ServiceContext.from_defaults(llm=llm)
+            query_engine = SimpleChatEngine.from_defaults(service_context=service_context)
 
         if verbose: print("query engine built", query_engine )
         role_map = {True: "user", False: "assistant"}
@@ -95,26 +98,20 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
         if verbose: print("messages: ", loaded_messages)
 
         response = query_engine.stream_chat(query, chat_history = loaded_messages) #, chat_history: Optional[List[ChatMessage]] = None)
-        # if verbose: print("response: ", response)
-        # response = query_engine.query(query)
 
         if messages == []:
             print('WARNING: messages were empty ?')
 
-        sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
+        if top_k > 0:
+            sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
         metadata = {
             "temperature" : temperature,
             "top_k" : top_k,
             "index" : index_name
         }
-        # sources = response.sources
-        if verbose: print("sources: ", sources)
-        # if verbose: print("source_nodes: ", source_nodes)
 
-        # sources = [{'url': source_node.node.metadata.get('src', ''), 'title' : source_node.node.metadata.get('title', '')} for source_node in response.source_nodes]
-        # if verbose: print("sources: ", sources)
-        # if verbose: print("ll_source_nodes: ", ll_source_nodes)
-        # if verbose: print("formatted_sources: ", response.get_formatted_sources())
+        if verbose: print("sources: ", sources)
+
 
         # Append tokens to the last message's 'text' field
         for token in response.response_gen:
@@ -123,15 +120,15 @@ def sme(req: https_fn.CallableRequest) -> https_fn.Request:
             new_text = last_message_text + token
 
             last_message['text'] = new_text
-            last_message['sources'] = sources
+            if top_k > 0:
+                last_message['sources'] = sources
             last_message['metadata'] = metadata
             chat_ref.update({'messages': messages})
 
 
 
         return {"status": "success"}
-        # except Exception as e:
-        #     return {"error line 110": str(e)}
+
     except Exception as e:
         # Capture the exception and format the stack trace
         error_message = str(e)
